@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getPosts, deletePost } from '../api';
+import { getPosts } from '../api';
 import { JobCard } from '../components/JobCard';
 import { Post } from '../types';
 import { useAuth } from '../context/AuthContext';
@@ -32,26 +32,6 @@ export const HomePage: React.FC = () => {
     }
   };
 
-  const handleEdit = (post: Post) => {
-    setEditingPost(post);
-    setFormData({
-      title: post.title,
-      content: post.content,
-      price: post.price.toString(),
-    });
-    setIsModalOpen(true);
-  };
-
-  const handleDelete = async (id: number) => {
-    try {
-      await deletePost(id);
-      toast.success('Job deleted successfully');
-      fetchPosts();
-    } catch (error) {
-      toast.error('Failed to delete job');
-    }
-  };
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex justify-between items-center mb-8">
@@ -69,7 +49,7 @@ export const HomePage: React.FC = () => {
         </div>
         {user && (
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => {}}
             className="ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
           >
             <PlusIcon className="h-5 w-5 mr-2" />
@@ -83,8 +63,8 @@ export const HomePage: React.FC = () => {
           <JobCard
             key={post.id}
             post={post}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
+            onEdit={() => {}}
+            onDelete={() => {}}
           />
         ))}
       </div>

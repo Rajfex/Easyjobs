@@ -5,14 +5,17 @@ import toast from 'react-hot-toast';
 
 interface AuthContextType {
   user: User | null;
+  loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  logout: ()  => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
   const fetchUserData = async () => {
     try {
       const response = await checkAuth();
@@ -21,14 +24,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           id: response.data.id,
           email: response.data.email,
           username: response.data.username,
-          isAuthenticated: true
+          isAuthenticated: true,
         });
-        return true;
+      } else {
+        setUser(null);
       }
-      return false;
     } catch (error) {
       setUser(null);
-      return false;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -38,16 +42,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     try {
-      // Login endpoint only sets HTTP-only cookies
       await apiLogin(email, password);
-      
-      // After successful login, fetch user data
-      const isAuthenticated = await fetchUserData();
-      
-      if (!isAuthenticated) {
-        throw new Error('Failed to fetch user data after login');
-      }
-      
+      await fetchUserData();
       toast.success('Successfully logged in!');
     } catch (error) {
       toast.error('Login failed. Please check your credentials.');
@@ -67,7 +63,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
