@@ -10,9 +10,18 @@ const REFRESH_SECRET_KEY = process.env.REFRESH_TOKEN_SECRET;
 
 // User registration
 router.post('/register', async (req, res) => {
-    const { username, email, password } = req.body;
+    const { username, email, password, age, gender, phone_number } = req.body;
+    console.log(req.body);
     if (!username || !email || !password) {
         return res.status(400).json({ message: 'All fields are required.' });
+    }
+
+    // Check if email is valid using regex "example@example.com"
+    if (!email.toLowerCase().match(      
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    )) 
+    {
+        return res.status(400).json({ message: 'Please enter a valid email.' });
     }
 
     try {
@@ -24,8 +33,8 @@ router.post('/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const [result] = await db.execute(
-            'INSERT INTO users (username, email, password) VALUES (?, ?, ?)', 
-            [username, email, hashedPassword]
+            'INSERT INTO users (username, email, password, age, gender, phone_number) VALUES (?, ?, ?, ?, ?, ?)', 
+            [username, email, hashedPassword, age, gender, phone_number]
         );
         res.status(201).json({ message: 'User registered successfully!', userId: result.insertId });
     } catch (error) {
@@ -67,7 +76,7 @@ router.post('/login', async (req, res) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production', 
             sameSite: 'Strict',
-            maxAge: 15 * 60 * 1000      // 15 minutes
+            maxAge: 1 * 60 * 1000      // 15 minutes
         });
 
         res.cookie('refreshToken', refreshToken, {

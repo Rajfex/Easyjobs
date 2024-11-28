@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { getUserPosts, updatePost, deletePost } from '../api';
+import { getUserPosts, updatePost, deletePost, refreshToken } from '../api';
 import { Post } from '../types';
 import { JobCard } from '../components/JobCard';
 import toast from 'react-hot-toast';
@@ -21,7 +21,15 @@ export const ProfilePage: React.FC = () => {
       try {
         const response = await getUserPosts();
         setPosts(response.data);
-      } catch (error) {
+      } catch (error: any) {
+        if(error.response.status === 401) {
+          try{
+            refreshToken();
+            window.location.reload();
+          } catch (error: any) {
+            console.error(error);
+          }
+        }
         toast.error('Failed to fetch your posts.');
         console.error(error);
       }
