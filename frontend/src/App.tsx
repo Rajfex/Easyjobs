@@ -8,7 +8,7 @@ import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { SinglePostPage } from './pages/SinglePostPage';
-
+import NotFound from './components/404';
 const App: React.FC = () => {
   return (
     <Router>
@@ -21,6 +21,7 @@ const App: React.FC = () => {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/post/:id" element={<SinglePostPage />} />
+            <Route path="/*" element={<NotFound />} />
             </Routes>
           <Toaster position="top-right" />
         </div>

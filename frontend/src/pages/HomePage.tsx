@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getPosts } from '../api';
+import { createPost, getPosts } from '../api';
 import { JobCard } from '../components/JobCard';
 import { Post } from '../types';
 import { useAuth } from '../context/AuthContext';
@@ -10,6 +10,24 @@ export const HomePage: React.FC = () => {
   const { user } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
   const [searchTitle, setSearchTitle] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [addPostData, setAddPostData] = useState({
+    'title': '',
+    'content': '',
+    'price': ''
+  })
+  const handleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  }
+
+  const handleAddPost = () => {
+    setIsModalOpen(false);
+    createPost({
+      title: addPostData.title,
+      content: addPostData.content,
+      price: Number(addPostData.price)
+    });
+  }
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -49,7 +67,7 @@ export const HomePage: React.FC = () => {
         </div>
         {user && (
           <button
-            onClick={() => {}}
+            onClick={handleModal}
             className="ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
           >
             <PlusIcon className="h-5 w-5 mr-2" />
@@ -63,11 +81,63 @@ export const HomePage: React.FC = () => {
           <JobCard
             key={post.id}
             post={post}
-            onEdit={() => {}}
-            onDelete={() => {}}
           />
         ))}
       </div>
+
+
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <h2 className="text-xl font-semibold mb-4">Add Job Offer</h2>
+            <form className="space-y-4" onSubmit={handleModal}>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Title</label>
+                <input
+                  type="text"
+                  onChange={(e) => {setAddPostData({ ...addPostData, 'title': e.target.value })}}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Content</label>
+                <textarea
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  onChange={(e) => {setAddPostData({ ...addPostData, 'content': e.target.value })}}
+                  rows={3}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Price ($/hr)</label>
+                <input
+                  type="number"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  onChange={(e) => {setAddPostData({ ...addPostData, 'price': e.target.value })}}
+                  required
+                />
+              </div>
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={handleModal}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  onClick={handleAddPost}
+                  className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md"
+                >
+                  Add Post
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   );
