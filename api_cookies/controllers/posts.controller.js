@@ -110,5 +110,21 @@ router.put('/:id', authenticateToken, async (req, res) => {
     }
 });
 
-    
+router.get('/phone-number/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const [userId] = await db.execute('SELECT user_id FROM posts WHERE id = ?', [id]);
+        console.log(userId[0].user_id);
+        const [phoneNumber] = await db.execute('SELECT phone_number FROM users WHERE id = ?', [userId[0].user_id]);
+        if (phoneNumber.length === 0) {
+            return res.status(404).json({ message: 'Post not found.' });
+        }
+        res.json(phoneNumber[0]);
+    } catch (error) {
+        console.error('Error fetching post:', error);
+        res.status(500).json({ message: 'Server error. Please try again later.' });
+    }
+});
+
 module.exports = router;

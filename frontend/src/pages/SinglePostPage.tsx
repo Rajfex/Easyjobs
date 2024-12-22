@@ -35,7 +35,9 @@ export const SinglePostPage: React.FC = () => {
         <div className="bg-white shadow-md rounded p-4">
           <h1 className="text-2xl font-bold mb-2">{post.title}</h1>
           <p className="text-gray-700">{post.content}</p>
+          
         </div>
+
       ) : (
         <div>Post not found.</div>
       )}

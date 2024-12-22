@@ -17,6 +17,7 @@ export const logout = async () => {
   return api.post('/auth/logout');
 };
 
+
 export const checkAuth = async () => {
   return api.get('/auth/check-auth');
 };

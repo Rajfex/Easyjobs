@@ -9,6 +9,7 @@ import { RegisterPage } from './pages/RegisterPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { SinglePostPage } from './pages/SinglePostPage';
 import NotFound from './components/404';
+import { LandingPage } from './pages/LandingPage';
 const App: React.FC = () => {
   return (
     <Router>
@@ -16,7 +17,8 @@ const App: React.FC = () => {
         <div className="min-h-screen bg-gray-50">
           <Navbar />
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/jobs" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/profile" element={<ProfilePage />} />

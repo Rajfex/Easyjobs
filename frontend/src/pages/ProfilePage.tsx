@@ -4,11 +4,9 @@ import { getUserPosts, refreshToken } from '../api';
 import { Post } from '../types';
 import { JobCard } from '../components/JobCard';
 import toast from 'react-hot-toast';
-
 export const ProfilePage: React.FC = () => {
   const { user } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
-
   useEffect(() => {
     const fetchUserPosts = async () => {
       try {
@@ -28,7 +26,7 @@ export const ProfilePage: React.FC = () => {
       }
     };
 
-    fetchUserPosts();
+      fetchUserPosts();
   }, []);
 
 
