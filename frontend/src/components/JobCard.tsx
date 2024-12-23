@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Post } from '../types';
+import React, {  useState } from 'react';
+import { Category, Post } from '../types';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
@@ -8,9 +8,10 @@ import toast from 'react-hot-toast';
 
 interface JobCardProps {
   post: Post;
+  categories: Category[];
 }
 
-export const JobCard: React.FC<JobCardProps> = ({ post }) => {
+export const JobCard: React.FC<JobCardProps> = ({ post, categories }) => {
   const { user } = useAuth();
   const canEdit = user?.id === post.user_id;
   const [editingPost, setEditingPost] = useState<Post | null>(null);
@@ -20,7 +21,11 @@ export const JobCard: React.FC<JobCardProps> = ({ post }) => {
     title: '',
     content: '',
     price: '',
+    category_id: '',
   });
+  const postDate = new Date(post.created_at);
+
+
   const handleDelete = async (id: number) => {
     handleDeleteModal();
     try {
@@ -48,6 +53,7 @@ export const JobCard: React.FC<JobCardProps> = ({ post }) => {
       title: post.title,
       content: post.content,
       price: post.price.toString(),
+      category_id: post.category[0].name,
     });
     setIsModalOpen(true);
   };
@@ -55,35 +61,41 @@ export const JobCard: React.FC<JobCardProps> = ({ post }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingPost) return;
-
+    console.log(formData.category_id);
     try {
       await updatePost(editingPost.id, {
         ...formData,
         price: Number(formData.price),
+        category_id: Number(formData.category_id),
       });
       setIsModalOpen(false);
       setEditingPost(null);
-      setFormData({ title: '', content: '', price: '' });
+      setFormData({ title: '', content: '', price: '', category_id: '' });
       toast.success('Post updated successfully.');
       window.location.reload();
     } catch (error) {
       toast.error('Failed to update the post.');
       console.error(error);
     }
+    console.log(formData.category_id);
   };
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
       <Link to={`/post/${post.id}`}>
         <div className="flex justify-between items-start">
-          <h3 className="text-xl font-semibold text-gray-900">{post.title}</h3>
+          <h3 className="text-2xl md:text-2xl font-semibold text-gray-900">{post.title}</h3>
           <div className="flex items-center space-x-2">
             <span className="px-4 py-1 bg-green-100 text-green-800 rounded-full">
               ${post.price} /hr
             </span>
           </div>
         </div>
-        <p className="mt-2 text-gray-600">{post.content}</p>
+        <p className="mt-2 text-gray-700">{post.content.length > 100 ? `${post.content.substring(0, 100)}...` : post.content}</p>
+        <p className="text-sm text-black mt-1 border border-gray-200 e-700 bg-gray-200 rounded-md px-2 py-1 inline-block">
+          {post.category[0].name}
+        </p>
+        <p className='text-sm mt-1 text-gray-500'>{postDate.toLocaleDateString('pl-PL', { day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: 'numeric' })}</p>
       </Link>
       {canEdit && (
         <div className="flex space-x-2 mt-4">
@@ -175,14 +187,35 @@ export const JobCard: React.FC<JobCardProps> = ({ post }) => {
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                   required
                 />
-              </div>
+              </div> 
+              <div className="w-full max-w-sm min-w-[200px]">
+                  <label className="block mb-1 text-sm text-slate-800">
+                      Your Country
+                  </label>
+                  <div className="relative">
+                    <select
+                        className="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded pl-3 pr-8 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md appearance-none cursor-pointer"
+                        value={formData.category_id} 
+                        onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
+                    >
+                      {categories.map((category) => (
+                        <option key={category.id} value={category.id}>
+                          {category.name}
+                        </option>
+                      ))}
+                    </select>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.2" stroke="currentColor" className="h-5 w-5 ml-1 absolute top-2.5 right-2.5 text-slate-700">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
+                    </svg>
+                  </div>
+                </div>
               <div className="flex justify-end space-x-3">
                 <button
                   type="button"
                   onClick={() => {
                     setIsModalOpen(false);
                     setEditingPost(null);
-                    setFormData({ title: '', content: '', price: '' });
+                    setFormData({ title: '', content: '', price: '', category_id: '' });
                   }}
                   className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md"
                 >

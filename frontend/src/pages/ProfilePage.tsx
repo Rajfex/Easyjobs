@@ -4,9 +4,11 @@ import { getUserPosts, refreshToken } from '../api';
 import { Post } from '../types';
 import { JobCard } from '../components/JobCard';
 import toast from 'react-hot-toast';
+import { useCategories } from '../context/CategoriesContext';
 export const ProfilePage: React.FC = () => {
   const { user } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
+  const categories = useCategories().categories;
   useEffect(() => {
     const fetchUserPosts = async () => {
       try {
@@ -68,11 +70,12 @@ export const ProfilePage: React.FC = () => {
 
       <h1 className="text-2xl font-bold my-6">Your Posts</h1>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-6">
+      <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2 mt-6">
         {posts.map((post) => (
           <JobCard
             key={post.id}
             post={post}
+            categories={categories}
           />
         ))}
       </div>

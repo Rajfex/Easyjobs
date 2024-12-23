@@ -5,6 +5,7 @@ import { Post } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { PlusIcon, SearchIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useCategories } from '../context/CategoriesContext';
 
 export const HomePage: React.FC = () => {
   const { user } = useAuth();
@@ -16,6 +17,7 @@ export const HomePage: React.FC = () => {
     'content': '',
     'price': ''
   })
+  const categories = useCategories().categories;
   const handleModal = () => {
     setIsModalOpen(!isModalOpen);
   }
@@ -76,11 +78,12 @@ export const HomePage: React.FC = () => {
         )}
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 grid-cols-1">
         {posts.map((post) => (
           <JobCard
             key={post.id}
             post={post}
+            categories={categories}
           />
         ))}
       </div>

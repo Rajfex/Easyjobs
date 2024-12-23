@@ -34,7 +34,7 @@ export const createPost = async (post: { title: string; content: string; price: 
   return api.post('/posts', post);
 };
 
-export const updatePost = async (id: number, post: { title: string; content: string; price: number }) => {
+export const updatePost = async (id: number, post: { title: string; content: string; price: number, category_id: number }) => {
   return api.put(`/posts/${id}`, post);
 };
 
@@ -48,4 +48,8 @@ export const getUserPosts = async () => {
 
 export const getPostById = async (id: number) => {
   return api.get(`/posts/${id}`);
+}
+
+export const getAllCategories = async () => {
+  return api.get('/categories/all-categories');
 }

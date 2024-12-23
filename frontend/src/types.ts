@@ -4,8 +4,14 @@ export interface Post {
   content: string;
   price: number;
   user_id: number;
+  created_at: string;
+  category: Category[];
 }
 
+export interface Category {
+  id: number;
+  name: string;
+}
 export interface User {
   id: number;
   email: string;

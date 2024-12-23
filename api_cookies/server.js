@@ -10,6 +10,7 @@ app.use(express.json());
 
 const authRoutes = require("./controllers/auth.controller");
 const postsRoutes = require("./controllers/posts.controller");
+const categoriesRoutes = require("./controllers/categories.controller");
 const authenticateToken = require("./middleware/auth.middleware");
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -24,6 +25,7 @@ app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postsRoutes);
+app.use('/api/categories', categoriesRoutes);
 
 
 app.get('/protected', authenticateToken, (req, res) => {
